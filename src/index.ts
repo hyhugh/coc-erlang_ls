@@ -39,7 +39,7 @@ function startServer(serverPath: string, serverPort: number) {
 };
 
 export function activate(context: ExtensionContext): void {
-  const config: WorkspaceConfiguration = workspace.getConfiguration("erlang")
+  const config: WorkspaceConfiguration = workspace.getConfiguration("erlang_ls")
   const server_path: string = config.get<string>("erlang_ls_path")
   const server_port: number = Number(config.get<number>("port"))
 

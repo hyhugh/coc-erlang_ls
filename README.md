@@ -6,14 +6,7 @@
 
 ## Features
 
-- auto completion
-- function signature help
-- hover document
-- go to definition
-- go to references
-- rename
-- snippets
-- diagnostic
+- everything which erlang_ls can provide
 
 ## Install
 
