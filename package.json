@@ -30,6 +30,11 @@
           "default": 19527,
           "description": "Port to communicate with language server."
         },
+        "erlang_ls.sourcer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use sourcer rather than erlang_ls"
+        },
         "erlang_ls.trace.server": {
           "type": "string",
           "default": "off",

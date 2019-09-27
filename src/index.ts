@@ -5,7 +5,7 @@ import {
   ExtensionContext,
   LanguageClientOptions,
   StreamInfo,
-  ProvideCompletionItemsSignature
+  ProvideCompletionItemsSignature,
 } from 'coc.nvim'
 import {
   CompletionContext,
@@ -44,7 +44,23 @@ function startServer(serverPath: string, serverPort: number) {
   };
 };
 
+let myCWD: string
+
+async function startServerSourcer(serverPath: string, serverPort: number): Promise<StreamInfo> {
+  let args = ['-p', serverPort.toString()]
+  let options = {
+    stdio: "inherit",
+    cwd: myCWD,
+    maxBuffer: 2 * 1024 * 1024,
+  }
+
+  execFile(serverPath, args, options)
+  let soc = await waitForSocket({port: serverPort})
+  return Promise.resolve({reader: soc, writer: soc})
+}
+
 export async function activate(context: ExtensionContext): Promise<void> {
+  myCWD = context.extensionPath
   const config: WorkspaceConfiguration = workspace.getConfiguration("erlang_ls")
   const server_path: string = config.get<string>("erlang_ls_path")
   const server_port: number = Number(config.get<number>("port"))
@@ -76,11 +92,15 @@ export async function activate(context: ExtensionContext): Promise<void> {
     initializationOptions: ""
   };
 
+  const use_sourcer: boolean = config.get<boolean>("sourcer")
+
   client = new LanguageClient(
     "erlang_ls",
-    startServer(server_path, server_port),
+    use_sourcer ? () => startServerSourcer(server_path, server_port) : startServer(server_path, server_port),
     clientOptions
   )
+
+  client.registerProposedFeatures()
 
   context.subscriptions.push(client.start())
 }
