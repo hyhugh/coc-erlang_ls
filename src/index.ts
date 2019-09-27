@@ -61,17 +61,15 @@ export async function activate(context: ExtensionContext): Promise<void> {
       ) => {
         const res = await Promise.resolve(next(document, position, context, token));
         let doc = workspace.getDocument(document.uri);
-        if (!doc || !res)
+        if (!doc)
           return [];
         let items: CompletionItem[] = res.hasOwnProperty('isIncomplete') ? (res as CompletionList).items : res as CompletionItem[];
-        // searching for class name
-        for (let index = 0; index < items.length; index++) {
-          let item = items[index];
+        items.forEach(item => {
           item.textEdit = {
             range: {start: position, end: position},
             newText: item.label.replace(/\/[^}]*/, '')
-          };
-        }
+          }
+        })
         return items;
       }
     },
