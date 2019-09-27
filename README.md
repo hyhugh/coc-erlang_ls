@@ -22,17 +22,17 @@ coc-settings.json
 
 ``` jsonc
 {
-        "erlang.erlang_ls_path": {
+        "erlang_ls.erlang_ls_path": {
           "type": "string",
           "default": "erlang_ls",
           "description": "path of erlang_ls"
         },
-        "erlang.port": {
+        "erlang_ls.port": {
           "type": "number",
           "default": 19527,
           "description": "Port to communicate with language server."
         },
-        "erlang.trace.server": {
+        "erlang_ls.trace.server": {
           "type": "string",
           "default": "off",
           "enum": [
