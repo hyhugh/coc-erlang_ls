@@ -5,12 +5,18 @@ import {
   ExtensionContext,
   LanguageClientOptions,
   StreamInfo,
-  OutputChannel,
-  services
+  ProvideCompletionItemsSignature
 } from 'coc.nvim'
-
+import {
+  CompletionContext,
+  TextDocument,
+  Position,
+  CompletionItem,
+  InsertTextFormat,
+  CompletionList
+} from 'vscode-languageserver-protocol'
+import {CancellationToken} from 'vscode-jsonrpc'
 import {waitForSocket} from 'socket-retry-connect';
-
 import {execFile} from 'child_process'
 
 let client: LanguageClient
@@ -38,13 +44,37 @@ function startServer(serverPath: string, serverPort: number) {
   };
 };
 
-export function activate(context: ExtensionContext): void {
+export async function activate(context: ExtensionContext): Promise<void> {
   const config: WorkspaceConfiguration = workspace.getConfiguration("erlang_ls")
   const server_path: string = config.get<string>("erlang_ls_path")
   const server_port: number = Number(config.get<number>("port"))
 
   let clientOptions: LanguageClientOptions = {
     documentSelector: [{scheme: 'file', language: 'erlang'}],
+    middleware: {
+      provideCompletionItem: async (
+        document: TextDocument,
+        position: Position,
+        context: CompletionContext,
+        token: CancellationToken,
+        next: ProvideCompletionItemsSignature
+      ) => {
+        const res = await Promise.resolve(next(document, position, context, token));
+        let doc = workspace.getDocument(document.uri);
+        if (!doc || !res)
+          return [];
+        let items: CompletionItem[] = res.hasOwnProperty('isIncomplete') ? (res as CompletionList).items : res as CompletionItem[];
+        // searching for class name
+        for (let index = 0; index < items.length; index++) {
+          let item = items[index];
+          item.textEdit = {
+            range: {start: position, end: position},
+            newText: item.label.replace(/\/[^}]*/, '')
+          };
+        }
+        return items;
+      }
+    },
     initializationOptions: ""
   };
 
