@@ -61,13 +61,15 @@ export async function activate(context: ExtensionContext): Promise<void> {
         let doc = workspace.getDocument(document.uri);
         if (!doc)
           return [];
-        let items: CompletionItem[] = res.hasOwnProperty('isIncomplete') ? (res as CompletionList).items : res as CompletionItem[];
-        items.forEach(item => {
-          item.textEdit = {
-            range: {start: position, end: position},
-            newText: item.label.replace(/\/[^}]*/, '')
-          }
-        })
+
+        if (res.hasOwnProperty('isIncomplete')) {
+          let itemList = res as CompletionList;
+          itemList.items.forEach(item => fixItem(item, position))
+          return itemList;
+        }
+
+        let items = res as CompletionItem[];
+        items.forEach(item => fixItem(item, position))
         return items;
       }
     },
@@ -85,6 +87,13 @@ export async function activate(context: ExtensionContext): Promise<void> {
     client.registerProposedFeatures()
     workspace.showMessage("coc-erlang_ls is ready")
   })
+}
+
+function fixItem(i: CompletionItem, pos: Position) {
+  i.textEdit = {
+    range: {start: pos, end: pos},
+    newText: i.label.replace(/\/[^}]*/, '')
+  }
 }
 
 export function deactivate(): Thenable<void> | undefined {
