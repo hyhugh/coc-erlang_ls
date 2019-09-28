@@ -12,7 +12,6 @@ import {
   TextDocument,
   Position,
   CompletionItem,
-  InsertTextFormat,
   CompletionList
 } from 'vscode-languageserver-protocol'
 import {CancellationToken} from 'vscode-jsonrpc'
@@ -36,7 +35,6 @@ function startServer(serverPath: string, serverPort: number) {
         }
         else {
           logger.appendLine('socket accepted, continuing.');
-          workspace.showMessage('socket accepted, continuing.');
           resolve({reader: socket, writer: socket});
         }
       });
@@ -81,8 +79,12 @@ export async function activate(context: ExtensionContext): Promise<void> {
     startServer(server_path, server_port),
     clientOptions
   )
+  client.start()
 
-  context.subscriptions.push(client.start())
+  client.onReady().then(() => {
+    client.registerProposedFeatures()
+    workspace.showMessage("coc-erlang_ls is ready")
+  })
 }
 
 export function deactivate(): Thenable<void> | undefined {
