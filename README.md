@@ -18,29 +18,17 @@ Plug 'hyhugh/coc-erlang_ls', {'do': 'yarn install --frozen-lockfile'}
 
 ## Config
 
-coc-settings.json
+There are three configuration variables available
 
+`erlang_ls.erlang_ls_path`: should be a string, which is the full path to the `erlang_ls` binary, or just `erlang_ls` if it is already in your `$PATH`.
+`erlang_ls.port`: should be a number, which is the port to communicate with the language server.
+`erlang_ls.trace.server`: three options available `off`, `messages` and `verbose`.
+
+Sample config to put in your `coc-settings.json`
 ``` jsonc
 {
-        "erlang_ls.erlang_ls_path": {
-          "type": "string",
-          "default": "erlang_ls",
-          "description": "path of erlang_ls"
-        },
-        "erlang_ls.port": {
-          "type": "number",
-          "default": 19527,
-          "description": "Port to communicate with language server."
-        },
-        "erlang_ls.trace.server": {
-          "type": "string",
-          "default": "off",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
-          "description": "Trace level of vim language server"
-        }
+  "erlang_ls.port": 12345,
+  "erlang_ls.erlang_ls_path": "/Users/hyhugh/apps/erlang_ls/_build/default/bin/erlang_ls",
+  "erlang_ls.trace.server": "off"
 }
 ```
