@@ -1,4 +1,5 @@
 # erlang_ls language server extension
+# Deprecated/ please refer to https://erlang-ls.github.io/getting-started/vim/ for the latest instruction
 
 > [coc-erlang_ls](https://github.com/hyhugh/coc-erlang_ls)
 
